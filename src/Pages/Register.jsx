@@ -37,7 +37,7 @@ export default function Register() {
   
     try {
       // const res = await axios.post("http://localhost:5000/register", formData);
-      const res = await axios.post("https://todo-backend.onrender.com/register", formData);
+      const res = await axios.post("https://todo-backend-r4rx.onrender.com/register", formData);
 
   
       setSuccess("Registration successful!");

@@ -31,7 +31,7 @@ function TodoHome() {
       //   task: inputData,
       //   userId: userId,
       // });
-      await axios.post("https://todo-backend.onrender.com/tasks", {
+      await axios.post("https://todo-backend-r4rx.onrender.com/tasks", {
         task: inputData,
         userId: userId,
       });
@@ -53,7 +53,7 @@ function TodoHome() {
   
     try {
       // const res = await axios.get(`http://localhost:5000/tasks/${userId}`);
-      const res = await axios.get(`https://todo-backend.onrender.com/tasks/${userId}`);
+      const res = await axios.get(`https://todo-backend-r4rx.onrender.com/tasks/${userId}`);
 
 
       setTasks(res.data);
@@ -72,7 +72,7 @@ function TodoHome() {
   const handleDelete = async (id) => {
     try {
       // await axios.delete(`http://localhost:5000/tasks/${id}`);
-      await axios.delete(`https://todo-backend.onrender.com/tasks/${id}`);
+      await axios.delete(`https://todo-backend-r4rx.onrender.com/tasks/${id}`);
 
       setTasks((prev) => prev.filter((task) => task._id !== id));
     } catch (e) {
@@ -95,7 +95,7 @@ function TodoHome() {
       // await axios.patch(`http://localhost:5000/tasks/${id}`, {
       //   task: editInput,
       // });
-      await axios.patch(`https://todo-backend.onrender.com/tasks/${id}`, {
+      await axios.patch(`https://todo-backend-r4rx.onrender.com/tasks/${id}`, {
         task: editInput,
       });
       

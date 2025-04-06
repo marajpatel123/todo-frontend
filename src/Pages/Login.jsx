@@ -20,7 +20,7 @@ export default function Login({ setLogin }) {
   
       try {
         // const res = await axios.get(`http://localhost:5000/register/${email}`);
-        const res = await axios.get(`https://todo-backend.onrender.com/register/${email}`);
+        const res = await axios.get(`https://todo-backend-r4rx.onrender.com/register/${email}`);
 
 
         const fetchedUser = res.data;

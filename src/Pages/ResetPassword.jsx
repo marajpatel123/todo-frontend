@@ -24,7 +24,7 @@ export default function ResetPassword() {
     setMsg("");
     setError("");
     try {
-      await axios.post("https://todo-backend.onrender.com/forgot-password", { email });
+      await axios.post("https://todo-backend-r4rx.onrender.com/forgot-password", { email });
       setMsg("✅ Reset link sent to your email");
     } catch (err) {
       console.error(err);

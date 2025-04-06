@@ -19,7 +19,7 @@ if (password !== confirmPassword) {
 }
 
 try {
-  await axios.post(`https://todo-backend.onrender.com/reset-password/${token}`, {
+  await axios.post(`https://todo-backend-r4rx.onrender.com/reset-password/${token}`, {
     password,
     confirmPassword,
   });
