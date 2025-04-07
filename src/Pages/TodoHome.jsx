@@ -35,21 +35,19 @@ function TodoHome() {
     }
   };
 
-const getAllTasks = async () => {
-  if (!userId) return;
+  const getAllTasks = async () => {
+    if (!userId) return;
 
-  try {
-    setLoading(true);
-    const res = await axios.get(`https://todo-backend-r4rx.onrender.com/tasks/user/${userId}`);
-    console.log("Fetched tasks:", res.data);
-    setTasks([...res.data]); // ✅ Force update with new array reference
-  } catch (err) {
-    console.error("Error fetching tasks:", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    try {
+      setLoading(true);
+      const res = await axios.get(`https://todo-backend-r4rx.onrender.com/tasks/user/${userId}`);
+      setTasks([...res.data]);
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCheckboxChange = (index, id) => {
     setCheckedState((prev) => ({
@@ -60,9 +58,7 @@ const getAllTasks = async () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(
-        `https://todo-backend-r4rx.onrender.com/tasks/${id}`
-      );
+      await axios.delete(`https://todo-backend-r4rx.onrender.com/tasks/${id}`);
       setTasks((prev) => prev.filter((task) => task._id !== id));
     } catch (e) {
       console.error("Error deleting task:", e);
@@ -81,12 +77,9 @@ const getAllTasks = async () => {
 
   const handleEditSave = async (id) => {
     try {
-      await axios.patch(
-        `https://todo-backend-r4rx.onrender.com/tasks/${id}`,
-        {
-          task: editInput,
-        }
-      );
+      await axios.patch(`https://todo-backend-r4rx.onrender.com/tasks/${id}`, {
+        task: editInput,
+      });
 
       setEditingTask(null);
       setEditInput("");
@@ -114,25 +107,27 @@ const getAllTasks = async () => {
     <div>
       {login ? (
         <div className="font-serif">
-          <div className="text-center">
+          {/* Top Header with Welcome and Logout - Responsive */}
+          <div className="flex flex-col sm:flex-row justify-between items-center px-4 pt-4">
+            <h1 className="text-white text-2xl font-bold text-center sm:text-left mb-2 sm:mb-0">
+              Welcome, {userName} 👋
+            </h1>
             <button
               onClick={() => {
                 localStorage.clear();
                 setTasks([]);
                 setLogin(false);
               }}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 absolute top-4 right-4"
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
             >
               Logout
             </button>
-
-            <h1 className="text-white text-center text-2xl font-bold">
-              Welcome, {userName} 👋
-            </h1>
-            <h1 className="text-green-500 text-[30px] font-bold">Todo App.</h1>
-            <h2 className="text-white text-[20px]">Add your task here..</h2>
           </div>
 
+          <h1 className="text-green-500 text-[30px] font-bold text-center mt-2">Todo App.</h1>
+          <h2 className="text-white text-[20px] text-center">Add your task here..</h2>
+
+          {/* Input for new task */}
           <form
             onSubmit={handleSubmit}
             className="flex flex-col sm:flex-row justify-center items-center mt-4 px-4"
