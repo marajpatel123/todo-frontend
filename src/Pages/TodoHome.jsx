@@ -36,20 +36,21 @@ function TodoHome() {
   };
 
   const getAllTasks = async () => {
+    const userId = localStorage.getItem("userId");
     if (!userId) return;
-
+  
     try {
       setLoading(true);
-      const res = await axios.get(
-        `https://todo-backend-r4rx.onrender.com/tasks/${userId}`
-      );
-      setTasks([...res.data]);
+      const res = await axios.get(`https://todo-backend-r4rx.onrender.com/tasks/user/${userId}`);
+      console.log("Fetched tasks:", res.data);
+      setTasks([...res.data]); // ✅ Force update with new array reference
     } catch (err) {
       console.error("Error fetching tasks:", err);
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleCheckboxChange = (index, id) => {
     setCheckedState((prev) => ({
