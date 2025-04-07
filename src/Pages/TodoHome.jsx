@@ -12,7 +12,7 @@ function TodoHome() {
   const [inputData, setInputData] = useState("");
   const [editingTask, setEditingTask] = useState(null);
   const [editInput, setEditInput] = useState("");
-  const [login, setLogin] = useState(false);
+  const [login, setLogin] = useState(() => !!localStorage.getItem("userId"));
   const [loading, setLoading] = useState(false);
 
   const userId = localStorage.getItem("userId");
@@ -22,32 +22,28 @@ function TodoHome() {
     e.preventDefault();
     if (!inputData) return;
 
-    const userId = localStorage.getItem("userId");
-
     try {
-      console.log("Sending userId:", userId);
-
       await axios.post("https://todo-backend-r4rx.onrender.com/tasks", {
         task: inputData,
         userId: userId,
       });
 
       setInputData("");
-      await getAllTasks(); // ✅ Ensure tasks refresh after add
+      await getAllTasks();
     } catch (e) {
       console.error("Error submitting task:", e);
     }
   };
 
   const getAllTasks = async () => {
-    const userId = localStorage.getItem("userId");
     if (!userId) return;
 
     try {
       setLoading(true);
-      const res = await axios.get(`https://todo-backend-r4rx.onrender.com/tasks/${userId}`);
-      console.log("Fetched tasks:", res.data);
-      setTasks([...res.data]); // ✅ Force update with new array reference
+      const res = await axios.get(
+        `https://todo-backend-r4rx.onrender.com/tasks/${userId}`
+      );
+      setTasks([...res.data]);
     } catch (err) {
       console.error("Error fetching tasks:", err);
     } finally {
@@ -64,7 +60,9 @@ function TodoHome() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://todo-backend-r4rx.onrender.com/tasks/${id}`);
+      await axios.delete(
+        `https://todo-backend-r4rx.onrender.com/tasks/${id}`
+      );
       setTasks((prev) => prev.filter((task) => task._id !== id));
     } catch (e) {
       console.error("Error deleting task:", e);
@@ -83,13 +81,16 @@ function TodoHome() {
 
   const handleEditSave = async (id) => {
     try {
-      await axios.patch(`https://todo-backend-r4rx.onrender.com/tasks/${id}`, {
-        task: editInput,
-      });
+      await axios.patch(
+        `https://todo-backend-r4rx.onrender.com/tasks/${id}`,
+        {
+          task: editInput,
+        }
+      );
 
       setEditingTask(null);
       setEditInput("");
-      await getAllTasks(); // ✅ Refresh after edit
+      await getAllTasks();
     } catch (e) {
       console.error("Error saving edited task:", e);
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; 
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
 import axios from "axios";
@@ -9,43 +9,39 @@ export default function Login({ setLogin }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
-  const [fetchedUid, setFetchedUid]= useState(null)
 
   const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setError("");
-      setUser(null);
-  
-      try {
-        // const res = await axios.get(`http://localhost:5000/register/${email}`);
-        const res = await axios.get(`https://todo-backend-r4rx.onrender.com/register/${email}`);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setUser(null);
 
+    try {
+      const res = await axios.get(
+        `https://todo-backend-r4rx.onrender.com/register/${email}`
+      );
 
-        const fetchedUser = res.data;
-        const hashedPassword = fetchedUser.password;
-        const uid= res.data._id;
-  
-        const isMatch = await bcrypt.compare(password, hashedPassword);
-  
-        if (isMatch) {
-          setUser(fetchedUser);
-          setLogin(true);
-          localStorage.setItem("userId", fetchedUser._id); // ✅ Save user ID
-          localStorage.setItem("userName", fetchedUser.name); // ✅ Save user name
-          navigate("/todo-app");
-        }
-         else {
-          setError("❌ Incorrect password");
-          setLogin(false); // Optional: set back to false if login failed
-        }
-      } catch (e) {
-        console.error("Error fetching user:", e);
-        setError(e.response?.data?.message || "Something went wrong.");
+      const fetchedUser = res.data;
+      const hashedPassword = fetchedUser.password;
+
+      const isMatch = await bcrypt.compare(password, hashedPassword);
+
+      if (isMatch) {
+        setUser(fetchedUser);
+        setLogin(true);
+        localStorage.setItem("userId", fetchedUser._id);
+        localStorage.setItem("userName", fetchedUser.name);
+        setTimeout(() => navigate("/todo-app"), 0);
+      } else {
+        setError("❌ Incorrect password");
+        setLogin(false);
       }
-    };
-
+    } catch (e) {
+      console.error("Error fetching user:", e);
+      setError(e.response?.data?.message || "Something went wrong.");
+    }
+  };
 
   return (
     <AuthLayout title="Login">
