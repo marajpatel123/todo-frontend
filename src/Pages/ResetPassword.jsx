@@ -8,30 +8,23 @@ export default function ResetPassword() {
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
 
-  // const handleReset = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     await axios.post("http://localhost:5000/forgot-password", { email });
-  //     setMsg("Reset link sent to your email");
-  //   } catch (err) {
-  //     console.error(err);
-  //     setMsg("Error sending reset email");
-  //   }
-  // };
-  
   const handleReset = async (e) => {
     e.preventDefault();
     setMsg("");
     setError("");
+
     try {
-      await axios.post("https://todo-backend-r4rx.onrender.com/forgot-password", { email });
-      setMsg("✅ Reset link sent to your email");
+      const res = await axios.post("https://todo-backend-r4rx.onrender.com/forgot-password", {
+        email,
+      });
+      setMsg(res.data.message || "✅ Reset link sent to your email");
     } catch (err) {
-      console.error(err);
-      setError("❌ Error sending reset email");
+      console.error("Reset error:", err);
+      const errorMessage =
+        err.response?.data?.message || "❌ Error sending reset email";
+      setError(errorMessage);
     }
   };
-  
 
   return (
     <AuthLayout title="Reset Password">
@@ -42,8 +35,12 @@ export default function ResetPassword() {
           className="w-full px-4 py-2 border rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
-        <button className="w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600">
+        <button
+          type="submit"
+          className="w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600"
+        >
           Send Reset Link
         </button>
       </form>
