@@ -12,8 +12,8 @@ function TodoHome() {
   const [inputData, setInputData] = useState("");
   const [editingTask, setEditingTask] = useState(null);
   const [editInput, setEditInput] = useState("");
-  const [login, setLogin] = useState(false); // 👈 Tracks login state
-
+  const [login, setLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const userId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
@@ -21,47 +21,40 @@ function TodoHome() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!inputData) return;
-  
-    const userId = localStorage.getItem("userId"); // ✅ Get userId here
-  
-    try {
-      console.log("Sending userId:", userId); // DEBUG
 
-      // await axios.post("http://localhost:5000/tasks", {
-      //   task: inputData,
-      //   userId: userId,
-      // });
+    const userId = localStorage.getItem("userId");
+
+    try {
+      console.log("Sending userId:", userId);
+
       await axios.post("https://todo-backend-r4rx.onrender.com/tasks", {
         task: inputData,
         userId: userId,
       });
-      
 
-      
-  
       setInputData("");
-      getAllTasks();
+      await getAllTasks(); // ✅ Ensure tasks refresh after add
     } catch (e) {
       console.error("Error submitting task:", e);
     }
   };
-  
 
   const getAllTasks = async () => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
-  
+
     try {
-      // const res = await axios.get(`http://localhost:5000/tasks/${userId}`);
+      setLoading(true);
       const res = await axios.get(`https://todo-backend-r4rx.onrender.com/tasks/${userId}`);
-
-
-      setTasks(res.data);
+      console.log("Fetched tasks:", res.data);
+      setTasks([...res.data]); // ✅ Force update with new array reference
     } catch (err) {
       console.error("Error fetching tasks:", err);
+    } finally {
+      setLoading(false);
     }
   };
-  
+
   const handleCheckboxChange = (index, id) => {
     setCheckedState((prev) => ({
       ...prev,
@@ -71,9 +64,7 @@ function TodoHome() {
 
   const handleDelete = async (id) => {
     try {
-      // await axios.delete(`http://localhost:5000/tasks/${id}`);
       await axios.delete(`https://todo-backend-r4rx.onrender.com/tasks/${id}`);
-
       setTasks((prev) => prev.filter((task) => task._id !== id));
     } catch (e) {
       console.error("Error deleting task:", e);
@@ -92,16 +83,13 @@ function TodoHome() {
 
   const handleEditSave = async (id) => {
     try {
-      // await axios.patch(`http://localhost:5000/tasks/${id}`, {
-      //   task: editInput,
-      // });
       await axios.patch(`https://todo-backend-r4rx.onrender.com/tasks/${id}`, {
         task: editInput,
       });
-      
+
       setEditingTask(null);
       setEditInput("");
-      getAllTasks();
+      await getAllTasks(); // ✅ Refresh after edit
     } catch (e) {
       console.error("Error saving edited task:", e);
     }
@@ -116,8 +104,6 @@ function TodoHome() {
       getAllTasks();
     }
   }, [login]);
-  
-  
 
   useEffect(() => {
     saveToLocalStorage(tasks);
@@ -131,7 +117,7 @@ function TodoHome() {
             <button
               onClick={() => {
                 localStorage.clear();
-                setTasks([]);         // clear tasks
+                setTasks([]);
                 setLogin(false);
               }}
               className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 absolute top-4 right-4"
@@ -145,6 +131,7 @@ function TodoHome() {
             <h1 className="text-green-500 text-[30px] font-bold">Todo App.</h1>
             <h2 className="text-white text-[20px]">Add your task here..</h2>
           </div>
+
           <form
             onSubmit={handleSubmit}
             className="flex flex-col sm:flex-row justify-center items-center mt-4 px-4"
@@ -168,55 +155,64 @@ function TodoHome() {
             Tasks List
           </h1>
 
+          {loading && (
+            <p className="text-white text-center mt-4">Loading tasks...</p>
+          )}
+
+          {!loading && tasks.length === 0 && (
+            <p className="text-white text-center mt-4">
+              No tasks found. Add your first task!
+            </p>
+          )}
+
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
-  {tasks.map((task, index) => (
-    <div
-      key={task._id}
-      className="bg-zinc-400 text-black rounded-lg p-4 flex flex-col sm:flex-row justify-between items-center shadow-inner shadow-black w-full"
-    >
-      <div className="flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-        <input
-          type="checkbox"
-          className="w-5 h-5 mr-3"
-          checked={!!checkedState[task._id]}
-          onChange={() => handleCheckboxChange(index, task._id)}
-        />
-        {editingTask === task._id ? (
-          <div className="flex-grow flex items-center gap-2">
-            <input
-              type="text"
-              className="w-full px-3 py-1 rounded-full text-black"
-              value={editInput}
-              onChange={(e) => setEditInput(e.target.value)}
-            />
-            <button
-              className="bg-black text-white px-3 py-1 rounded-xl"
-              onClick={() => handleEditSave(task._id)}
-            >
-              Save
-            </button>
+            {tasks.map((task, index) => (
+              <div
+                key={task._id}
+                className="bg-zinc-400 text-black rounded-lg p-4 flex flex-col sm:flex-row justify-between items-center shadow-inner shadow-black w-full"
+              >
+                <div className="flex items-center w-full sm:w-auto mb-2 sm:mb-0">
+                  <input
+                    type="checkbox"
+                    className="w-5 h-5 mr-3"
+                    checked={!!checkedState[task._id]}
+                    onChange={() => handleCheckboxChange(index, task._id)}
+                  />
+                  {editingTask === task._id ? (
+                    <div className="flex-grow flex items-center gap-2">
+                      <input
+                        type="text"
+                        className="w-full px-3 py-1 rounded-full text-black"
+                        value={editInput}
+                        onChange={(e) => setEditInput(e.target.value)}
+                      />
+                      <button
+                        className="bg-black text-white px-3 py-1 rounded-xl"
+                        onClick={() => handleEditSave(task._id)}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  ) : (
+                    <h3 className="ml-3 break-words">{task.task}</h3>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <FontAwesomeIcon
+                    icon={editingTask === task._id ? faTimes : faEdit}
+                    className="text-white cursor-pointer"
+                    onClick={() => handleEditClick(task)}
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="text-white cursor-pointer"
+                    onClick={() => handleDelete(task._id)}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <h3 className="ml-3 break-words">{task.task}</h3>
-        )}
-      </div>
-
-      <div className="flex items-center gap-4">
-        <FontAwesomeIcon
-          icon={editingTask === task._id ? faTimes : faEdit}
-          className="text-white cursor-pointer"
-          onClick={() => handleEditClick(task)}
-        />
-        <FontAwesomeIcon
-          icon={faTrash}
-          className="text-white cursor-pointer"
-          onClick={() => handleDelete(task._id)}
-        />
-      </div>
-    </div>
-  ))}
-</div>
-
         </div>
       ) : (
         <Login setLogin={setLogin} />
