@@ -103,13 +103,14 @@ function TodoHome() {
     saveToLocalStorage(tasks);
   }, [tasks]);
 
+
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 text-white">
       {login ? (
-        <div className="font-serif">
-          {/* Top Header with Welcome and Logout - Responsive */}
-          <div className="flex flex-col sm:flex-row justify-between items-center px-4 pt-4">
-            <h1 className="text-white text-2xl font-bold text-center sm:text-left mb-2 sm:mb-0">
+        <div className="font-serif max-w-6xl mx-auto px-4 pb-10">
+          {/* Top Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-center pt-6 mb-8">
+            <h1 className="text-blue-300 text-2xl font-bold mb-4 sm:mb-0">
               Welcome, {userName} 👋
             </h1>
             <button
@@ -118,96 +119,142 @@ function TodoHome() {
                 setTasks([]);
                 setLogin(false);
               }}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition-all shadow-md hover:shadow-lg"
             >
               Logout
             </button>
           </div>
 
-          <h1 className="text-green-500 text-[30px] font-bold text-center mt-2">Todo App.</h1>
-          <h2 className="text-white text-[20px] text-center">Add your task here..</h2>
+          {/* Main Content */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 shadow-2xl">
+            <h1 className="text-blue-300 text-3xl md:text-4xl font-bold text-center mb-2">
+              Todo App
+            </h1>
+            <h2 className="text-blue-200 text-lg text-center mb-8">
+              Organize your tasks efficiently
+            </h2>
 
-          {/* Input for new task */}
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row justify-center items-center mt-4 px-4"
-          >
-            <input
-              className="w-full sm:w-[400px] h-14 border rounded-l-lg text-black text-xl font-semibold px-4 mb-2 sm:mb-0"
-              type="text"
-              placeholder="Add task"
-              value={inputData}
-              onChange={(e) => setInputData(e.target.value)}
-            />
-            <button
-              className="bg-pink-400 h-14 w-full sm:w-[100px] rounded-r-lg text-xl text-black"
-              type="submit"
+            {/* Input Form */}
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col sm:flex-row justify-center gap-2 max-w-2xl mx-auto mb-12"
             >
-              Add
-            </button>
-          </form>
-
-          <h1 className="text-[25px] w-auto h-[80px] shadow-inner shadow-red-400 text-yellow-400 mt-[100px] text-center content-center rounded-full">
-            Tasks List
-          </h1>
-
-          {loading && (
-            <p className="text-white text-center mt-4">Loading tasks...</p>
-          )}
-
-          {!loading && tasks.length === 0 && (
-            <p className="text-white text-center mt-4">
-              No tasks found. Add your first task!
-            </p>
-          )}
-
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
-            {tasks.map((task, index) => (
-              <div
-                key={task._id}
-                className="bg-zinc-400 text-black rounded-lg p-4 flex flex-col sm:flex-row justify-between items-center shadow-inner shadow-black w-full"
+              <input
+                className="flex-grow h-14 border border-blue-500 bg-white/20 text-white placeholder-blue-200 rounded-xl text-lg px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text"
+                placeholder="Add a new task..."
+                value={inputData}
+                onChange={(e) => setInputData(e.target.value)}
+              />
+              <button
+                className="bg-blue-700 hover:bg-blue-600 h-14 px-6 rounded-xl text-lg font-medium transition-all duration-300 shadow-lg hover:shadow-blue-700/30"
+                type="submit"
               >
-                <div className="flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 mr-3"
-                    checked={!!checkedState[task._id]}
-                    onChange={() => handleCheckboxChange(index, task._id)}
-                  />
-                  {editingTask === task._id ? (
-                    <div className="flex-grow flex items-center gap-2">
-                      <input
-                        type="text"
-                        className="w-full px-3 py-1 rounded-full text-black"
-                        value={editInput}
-                        onChange={(e) => setEditInput(e.target.value)}
-                      />
-                      <button
-                        className="bg-black text-white px-3 py-1 rounded-xl"
-                        onClick={() => handleEditSave(task._id)}
-                      >
-                        Save
-                      </button>
-                    </div>
-                  ) : (
-                    <h3 className="ml-3 break-words">{task.task}</h3>
-                  )}
-                </div>
+                Add
+              </button>
+            </form>
 
-                <div className="flex items-center gap-4">
-                  <FontAwesomeIcon
-                    icon={editingTask === task._id ? faTimes : faEdit}
-                    className="text-white cursor-pointer"
-                    onClick={() => handleEditClick(task)}
-                  />
-                  <FontAwesomeIcon
-                    icon={faTrash}
-                    className="text-white cursor-pointer"
-                    onClick={() => handleDelete(task._id)}
-                  />
-                </div>
+            {/* Tasks Header */}
+            <div className="flex justify-center mb-8">
+              <div className="bg-blue-700 py-4 px-8 rounded-full">
+                <h1 className="text-xl md:text-2xl font-bold">
+                  Your Tasks List
+                </h1>
               </div>
-            ))}
+            </div>
+
+            {/* Loading/Empty States */}
+            {loading && (
+              <div className="text-center py-10">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+                <p>Loading your tasks...</p>
+              </div>
+            )}
+
+            {!loading && tasks.length === 0 && (
+              <div className="text-center py-10 bg-blue-800/30 rounded-2xl">
+                <p className="text-lg text-blue-200">
+                  No tasks found. Add your first task to get started!
+                </p>
+              </div>
+            )}
+
+            {/* Tasks Grid */}
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {tasks.map((task) => (
+                <div
+                  key={task._id}
+                  className="bg-gradient-to-br from-blue-800/40 to-blue-900/50 rounded-2xl p-5 flex flex-col border border-blue-700/30 shadow-lg hover:shadow-blue-700/30 transition-all duration-300"
+                >
+                  <div className="flex items-start mb-3">
+                    <input
+                      type="checkbox"
+                      className="mt-1 w-5 h-5 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                      checked={!!checkedState[task._id]}
+                      onChange={() => handleCheckboxChange(task._id)}
+                    />
+                    
+                    <div className="ml-3 flex-1 min-w-0">
+                      {editingTask === task._id ? (
+                        <div className="flex flex-col gap-2">
+                          <input
+                            type="text"
+                            className="w-full px-3 py-2 rounded-lg bg-blue-900/50 text-white border border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            value={editInput}
+                            onChange={(e) => setEditInput(e.target.value)}
+                            autoFocus
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              className="px-3 py-1 text-sm rounded-lg bg-gray-600 hover:bg-gray-500 transition-colors"
+                              onClick={() => setEditingTask(null)}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              className="px-3 py-1 text-sm rounded-lg bg-blue-700 hover:bg-blue-600 transition-colors"
+                              onClick={() => handleEditSave(task._id)}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <h3 
+                          className={`break-words text-lg ${checkedState[task._id] ? 'line-through text-blue-300' : 'text-white'}`}
+                        >
+                          {task.task}
+                        </h3>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex justify-end gap-3 mt-auto pt-3 border-t border-blue-700/30">
+                    <button
+                      className="p-2 rounded-full hover:bg-blue-700/30 transition-colors"
+                      onClick={() => handleEditClick(task)}
+                      aria-label={editingTask === task._id ? "Cancel" : "Edit"}
+                    >
+                      <FontAwesomeIcon 
+                        icon={editingTask === task._id ? faTimes : faEdit} 
+                        className={editingTask === task._id ? "text-yellow-400" : "text-blue-300"}
+                      />
+                    </button>
+                    <button
+                      className="p-2 rounded-full hover:bg-red-500/30 transition-colors"
+                      onClick={() => handleDelete(task._id)}
+                      aria-label="Delete"
+                    >
+                      <FontAwesomeIcon 
+                        icon={faTrash} 
+                        className="text-red-400" 
+                      />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : (
