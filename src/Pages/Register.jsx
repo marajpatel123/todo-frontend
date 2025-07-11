@@ -1,8 +1,7 @@
-// src/pages/Register.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
-import axios from "axios"
+import axios from "axios";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -13,8 +12,6 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
-
-  console.log(formData)
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -36,9 +33,8 @@ export default function Register() {
     }
   
     try {
-      // const res = await axios.post("http://localhost:5000/register", formData);
-      const res = await axios.post("https://todo-backend-r4rx.onrender.com/register", formData);
-
+      // Either use the response or remove the assignment
+      await axios.post("https://todo-backend-r4rx.onrender.com/register", formData);
   
       setSuccess("Registration successful!");
       setTimeout(() => navigate("/login"), 1500);
@@ -47,7 +43,6 @@ export default function Register() {
       setError(err.response?.data?.message || "Something went wrong.");
     }
   };
-  
 
   return (
     <AuthLayout title="Register">

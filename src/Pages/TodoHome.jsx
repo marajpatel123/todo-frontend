@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "../App.css";
 import axios from "axios";
 import React from "react";
@@ -35,7 +35,7 @@ function TodoHome() {
     }
   };
 
-  const getAllTasks = async () => {
+const getAllTasks = useCallback(async () => {
     if (!userId) return;
 
     try {
@@ -47,7 +47,8 @@ function TodoHome() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]); // Add userId as dependency since it's used in the function
+
 
   const handleCheckboxChange = (index, id) => {
     setCheckedState((prev) => ({
@@ -97,7 +98,7 @@ function TodoHome() {
     if (login) {
       getAllTasks();
     }
-  }, [login]);
+  }, [login, getAllTasks]);
 
   useEffect(() => {
     saveToLocalStorage(tasks);
