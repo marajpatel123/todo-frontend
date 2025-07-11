@@ -11,36 +11,48 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleReset = async (e) => {
-    e.preventDefault();
-    setMsg("");
-    setError("");
-    setIsLoading(true);
+const handleReset = async (e) => {
+  e.preventDefault();
+  setMsg("");
+  setError("");
+  setIsLoading(true);
 
-    try {
-      const res = await axios.post(
-        "https://todo-backend-r4rx.onrender.com/forgot-password", 
-        { email },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      
-      setMsg(res.data.message || "✅ Reset link sent to your email. Check your inbox (and spam folder).");
-      setTimeout(() => navigate("/login"), 3000);
-    } catch (err) {
-      console.error("Reset error:", err);
-      const errorMessage =
-        err.response?.data?.message || 
-        err.response?.data?.error || 
-        "❌ Error sending reset email. Please try again later.";
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
+  try {
+    const res = await axios.post(
+      "https://todo-backend-r4rx.onrender.com/forgot-password", 
+      { email },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        timeout: 10000 // 10 second timeout
+      }
+    );
+    
+    setMsg(res.data.message || "Reset link sent to your email");
+    setTimeout(() => navigate("/login"), 3000);
+  } catch (err) {
+    console.error("Full error object:", err);
+    
+    let errorMessage = "Error sending reset email";
+    if (err.response) {
+      // Backend returned an error response
+      errorMessage = err.response.data?.message || 
+                     err.response.data?.error || 
+                     `Server error (${err.response.status})`;
+    } else if (err.request) {
+      // Request was made but no response received
+      errorMessage = "No response from server. Please try again later.";
+    } else {
+      // Something happened in setting up the request
+      errorMessage = err.message || "Network error";
     }
-  };
+    
+    setError(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <AuthLayout title="Reset Password">
