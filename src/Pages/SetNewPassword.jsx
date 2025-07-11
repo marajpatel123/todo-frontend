@@ -12,25 +12,38 @@ export default function SetNewPassword() {
 const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  setErrorMsg("");
+  setSuccessMsg("");
 
-if (password !== confirmPassword) {
-  return setErrorMsg("❌ Passwords do not match");
-}
+  if (password !== confirmPassword) {
+    return setErrorMsg("❌ Passwords do not match");
+  }
 
-try {
-  await axios.post(`https://todo-backend-r4rx.onrender.com/reset-password/${token}`, {
-    password,
-    confirmPassword,
-  });
-  setSuccessMsg("✅ Password updated successfully");
-  setTimeout(() => navigate("/login"), 2000);
-} catch (err) {
-  console.error(err);
-  setErrorMsg("❌ Something went wrong");
-}
+  try {
+    const response = await axios.post(
+      `https://todo-backend-r4rx.onrender.com/reset-password/${token}`,
+      { password, confirmPassword },
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
-  };
+    setSuccessMsg(response.data.message || "✅ Password updated successfully");
+    setTimeout(() => navigate("/login"), 2000);
+  } catch (err) {
+    console.error("Full error details:", err);
+    
+    const errorMessage = 
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      "❌ Failed to reset password. Please try again.";
+    
+    setErrorMsg(errorMessage);
+  }
+};
 
   return (
     <div className="p-4 max-w-md mx-auto mt-10">
